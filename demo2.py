@@ -10,7 +10,7 @@ db=Request_Firebase(project_id='requestfirebase108')
 #db.delete_data(path=f"{151110+i}")
 
 
-sdb=Request_Firebase_Storage()
+sdb=Request_Firebase_Storage(project_id='requestfirebase108')
 
 #sdb.upload_file(path='js',file_name='demo.html')
 #sdb.download_files(path='js')
