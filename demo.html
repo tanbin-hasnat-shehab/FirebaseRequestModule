@@ -1,0 +1,11 @@
+<py-env>
+    - requests
+    files = ["req_module.py"]
+</py-env>
+<py-script>
+    from req_module import*
+
+    db=Request_Firebase()
+    db.input_data(path=f'{11111}',data={'strength': 'hard work'})
+    
+</py-script>
