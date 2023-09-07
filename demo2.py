@@ -1,7 +1,7 @@
 from req_module import *
 
 db=Request_Firebase(project_id='requestfirebase108')
-
+#give your project id, make sure all rules are >> 'true'   just replace everything says false
 
 
 #db.input_data(path=f'10_06_2023',data={99998:{'name':'t iqbal','proffession':'house wife','dieasese':'kidney','doctor name':'ziauddin'}})
