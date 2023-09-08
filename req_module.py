@@ -3,6 +3,7 @@ import requests
 import json
 import os
 import random
+import shutil
 
 class Request_Firebase():
     def __init__(self,*args,**kwargs):
@@ -49,23 +50,36 @@ class Request_Firebase_Storage():
         self.storage_url = f"https://firebasestorage.googleapis.com/v0/b/{self.firebase_project_id}.appspot.com/o/"
         pass
     def upload_file(self,*args,**kwargs):
-        local_file_path=kwargs.get('file_name','')
+        local_file_path_long=kwargs.get('file_name','')
+        if '\\' in local_file_path_long:
+            path_list=local_file_path_long.split('\\')
+            local_file_path_name=path_list[-1]
+            src_path = local_file_path_long
+            dst_path = os.getcwd()
+            shutil.copy(src_path, dst_path)
+        else:
+            local_file_path_name=local_file_path_long
+
+        file_attribute=kwargs.get('attribute','common')
+        local_file_path=local_file_path_name
         l1=local_file_path.split('.')
         ext=l1[-1]
         
         file_name_only=''
         if len(l1)==2:
-            file_name_only=l1[0]
+            file_name_only=f'{file_attribute}|'+l1[0]
         else:
             l1=l1.pop()
             for i in l1:
                 file_name_only=file_name_only+i
+            file_name_only=f'{file_attribute}|'+file_name_only
         path=kwargs.get('path','ss_')
         random_num=random.randint(10000,20000)
         destination_blob_name=path+'|'+file_name_only+'_'+str(random_num)+'.'+ext
         upload_url = f"{self.storage_url}{destination_blob_name}"
         with open(local_file_path, "rb") as file:
             response = requests.post(upload_url, files={"file": (os.path.basename(local_file_path), file)})
+        os.remove(local_file_path)
         
         if response.status_code == 200:
             print(f"File {local_file_path} uploaded to {destination_blob_name}.")
@@ -75,6 +89,7 @@ class Request_Firebase_Storage():
     # Function to download a file from Firebase Storage
     def download_files(self,*args,**kwargs):
         path=kwargs.get('path','')
+        file_attribute=kwargs.get('attribute','common')
         local_folder='downloads'
         list_url = f"{self.storage_url}?prefix=&delimiter=/"
         response = requests.get(list_url)
@@ -86,14 +101,15 @@ class Request_Firebase_Storage():
             for item in items:
                 blob_name = item["name"]
                 blob_arr=blob_name.split('|')
-                if blob_arr[0]==path:
+                if blob_arr[0]==path and blob_arr[1]==file_attribute:
                     local_file_path = os.path.join(local_folder, blob_name.replace("|", "_"))
                     download_url = f"{self.storage_url}{blob_name}?alt=media"
-                    print(download_url)
-                    
                     self.download_single_file(download_url, local_file_path)
+                    print(f"All files from '{path}' downloaded to '{local_folder}'.")
+                else:
+                    print('completeing')
             
-            print(f"All files from '{path}' downloaded to '{local_folder}'.")
+            
         else:
             print(f"Failed to list files in '{path}' - Status Code: {response.status_code}")
     def download_single_file(self,download_url, local_file_path):
@@ -109,6 +125,8 @@ class Request_Firebase_Storage():
 
     def delete_files(self,*args,**kwargs):
         path=kwargs.get('path','')
+        file_attribute=kwargs.get('attribute','common')
+        delete_path=kwargs.get('delete_path',False)
         # List all files in the specified folder
         list_url = f"{self.storage_url}?prefix=&delimiter=/"
         response = requests.get(list_url)
@@ -120,8 +138,11 @@ class Request_Firebase_Storage():
             for item in items:
                 blob_name = item["name"]
                 blob_arr=blob_name.split('|')
-                if blob_arr[0]==path:
+                if blob_arr[0]==path and delete_path==True:
                     self.delete_file(blob_name)
+                if blob_arr[0]==path and delete_path==False and blob_arr[1]==file_attribute:
+                    self.delete_file(blob_name)
+
             
             print(f"All files in folder '{path}' deleted.")
         else:
