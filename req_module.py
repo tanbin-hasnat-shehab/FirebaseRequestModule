@@ -51,6 +51,7 @@ class Request_Firebase_Storage():
         pass
     def upload_file(self,*args,**kwargs):
         local_file_path_long=kwargs.get('file_name','')
+        random_name_extention=kwargs.get('random_name_extention',True)
         if '\\' in local_file_path_long:
             path_list=local_file_path_long.split('\\')
             local_file_path_name=path_list[-1]
@@ -74,7 +75,10 @@ class Request_Firebase_Storage():
                 file_name_only=file_name_only+i
             file_name_only=f'{file_attribute}|'+file_name_only
         path=kwargs.get('path','ss_')
-        random_num=random.randint(10000,20000)
+        if random_name_extention==True:
+            random_num=random.randint(10000,20000)
+        else:
+            random_num=''
         destination_blob_name=path+'|'+file_name_only+'_'+str(random_num)+'.'+ext
         upload_url = f"{self.storage_url}{destination_blob_name}"
         with open(local_file_path, "rb") as file:
