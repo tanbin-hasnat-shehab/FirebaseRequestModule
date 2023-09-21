@@ -12,7 +12,7 @@ db=Request_Firebase(project_id='requestfirebase108')
 
 sdb=Request_Firebase_Storage()
 
-#sdb.upload_file(path='py',attribute='condition',file_name='C:\\Users\\Hasnat\\Desktop\\desk\\pyscript\\Request Firebase Module\\pyscr\\webApp.py')
+#sdb.upload_file(path='py',attribute='condition',random_name_extention=False,file_name='demo2.py')
 #sdb.download_files(path='js',attribute='condition')
 #sdb.delete_files(path='py',attribute='name')
 #sdb.delete_files(path='py',delete_path=True)
