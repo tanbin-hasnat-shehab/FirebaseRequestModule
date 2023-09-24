@@ -77,9 +77,10 @@ class Request_Firebase_Storage():
         path=kwargs.get('path','ss_')
         if random_name_extention==True:
             random_num=random.randint(10000,20000)
+            destination_blob_name=path+'|'+file_name_only+'_'+str(random_num)+'.'+ext
         else:
-            random_num=''
-        destination_blob_name=path+'|'+file_name_only+'_'+str(random_num)+'.'+ext
+            destination_blob_name=path+'|'+file_name_only+'.'+ext
+        
         upload_url = f"{self.storage_url}{destination_blob_name}"
         with open(local_file_path, "rb") as file:
             response = requests.post(upload_url, files={"file": (os.path.basename(local_file_path), file)})
@@ -94,7 +95,8 @@ class Request_Firebase_Storage():
     def download_files(self,*args,**kwargs):
         path=kwargs.get('path','')
         file_attribute=kwargs.get('attribute','common')
-        local_folder='downloads'
+        local_folder=kwargs.get('folder_name','.')
+        name_as_db=kwargs.get('name_as_db',True)
         list_url = f"{self.storage_url}?prefix=&delimiter=/"
         response = requests.get(list_url)
         
@@ -105,8 +107,12 @@ class Request_Firebase_Storage():
             for item in items:
                 blob_name = item["name"]
                 blob_arr=blob_name.split('|')
+                blob_local_name=blob_arr[-1]
                 if blob_arr[0]==path and blob_arr[1]==file_attribute:
-                    local_file_path = os.path.join(local_folder, blob_name.replace("|", "_"))
+                    if name_as_db==True:
+                        local_file_path = os.path.join(local_folder, blob_name.replace("|", "_"))
+                    else:
+                        local_file_path = os.path.join(local_folder, blob_local_name)
                     download_url = f"{self.storage_url}{blob_name}?alt=media"
                     self.download_single_file(download_url, local_file_path)
                     print(f"All files from '{path}' downloaded to '{local_folder}'.")
