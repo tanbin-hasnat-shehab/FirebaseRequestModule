@@ -12,8 +12,8 @@ db=Request_Firebase(project_id='requestfirebase108')
 
 sdb=Request_Firebase_Storage()
 
-#sdb.upload_file(path='py',attribute='condition',random_name_extention=False,file_name='demo2.py')
-#sdb.download_files(path='js',attribute='condition')
+#sdb.upload_file(path='py',attribute='condition',random_name_extention=False,file_name='C:\\Users\\Hasnat\\Desktop\\desk\\spec.txt')
+#sdb.download_files(path='py',attribute='condition',name_as_db=False)
 #sdb.delete_files(path='py',attribute='name')
 #sdb.delete_files(path='py',delete_path=True)
 
